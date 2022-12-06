@@ -21,6 +21,8 @@ module.exports.createCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
+      } else {
+        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE });
       }
     });
 };
