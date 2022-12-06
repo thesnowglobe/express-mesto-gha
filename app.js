@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { ERROR_404, ERROR_404_MESSAGE } = require('./constants/errorCodes');
 const { usersRoutes } = require('./routes/users');
 const { cardsRoutes } = require('./routes/cards');
+
 const { PORT = 3000 } = process.env;
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   req.user = {
-    _id: '638f37ae1b3a3e696c84f05d'
+    _id: '638f37ae1b3a3e696c84f05d',
   };
 
   next();

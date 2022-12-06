@@ -5,7 +5,7 @@ const {
   ERROR_500,
   ERROR_400_MESSAGE,
   ERROR_404_MESSAGE,
-  ERROR_500_MESSAGE
+  ERROR_500_MESSAGE,
 } = require('../constants/errorCodes');
 
 module.exports.getCards = (req, res) => {
@@ -20,7 +20,7 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE});
+        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
       }
     });
 };
@@ -36,11 +36,11 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE});
+        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
       } else if (err.statusCode === ERROR_404) {
-        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE});
+        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE });
       } else {
-        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE});
+        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE });
       }
     });
 };
@@ -62,9 +62,9 @@ module.exports.likeCard = (req, res) => {
       if (err.name === 'CastError') {
         res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
       } else if (err.statusCode === ERROR_404) {
-        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE});
+        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE });
       } else {
-        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE});
+        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE });
       }
     });
 };
@@ -74,7 +74,7 @@ module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     cardId,
     { $pull: { likes: req.user._id } },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .orFail(() => {
       const error = new Error();
@@ -84,11 +84,11 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE});
+        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
       } else if (err.statusCode === ERROR_404) {
-        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE});
+        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE });
       } else {
-        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE})
+        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE });
       }
     });
 };
