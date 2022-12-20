@@ -25,7 +25,7 @@ app.post('/signup', signUpValidation, createUser);
 
 app.use('/users', auth, usersRoutes);
 app.use('/cards', auth, cardsRoutes);
-app.use('*', notFoundRoute);
+app.use('*', auth, notFoundRoute);
 app.use(errors());
 app.use(errorHandler);
 

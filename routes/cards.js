@@ -14,7 +14,7 @@ const { cardDataValidation, cardIdValidation } = require('../middlewares/validat
 
 cardsRoutes.get('/', getCards);
 cardsRoutes.post('/', cardDataValidation, createCard);
-cardsRoutes.delete('/:cardId', deleteCard);
+cardsRoutes.delete('/:cardId', cardIdValidation, deleteCard);
 cardsRoutes.put('/:cardId/likes', cardIdValidation, likeCard);
 cardsRoutes.delete('/:cardId/likes', cardIdValidation, dislikeCard);
 
