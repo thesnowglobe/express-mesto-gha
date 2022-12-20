@@ -10,6 +10,7 @@ const { notFoundRoute } = require('./routes/notFound');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { signUpValidation, signInValidation } = require('./middlewares/validation');
+const errorHandler = require('./middlewares/errorHandler');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -26,14 +27,8 @@ app.use('/users', auth, usersRoutes);
 app.use('/cards', auth, cardsRoutes);
 app.use('*', notFoundRoute);
 app.use(errors());
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500
-      ? 'На сервере произошла ошибка'
-      : message,
-  });
-  next();
-});
+app.use(errorHandler);
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+});
