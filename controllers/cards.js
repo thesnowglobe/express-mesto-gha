@@ -24,12 +24,12 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
-  Card.findByIdAndDelete(cardId)
+  const { _id } = req.params;
+  Card.findByIdAndDelete(_id)
     .orFail(new NotFoundError('Карточка не найдена'))
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
-        return Card.findByIdAndRemove(cardId)
+        return Card.findByIdAndRemove(_id)
           .then(() => res.send({ message: 'Карточка удалена' }));
       }
       throw new ForbiddenError('Нет прав на удаление карточки');
