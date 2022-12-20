@@ -25,6 +25,9 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
+  if (cardId.length !== 24) {
+    throw new BadRequestError('Переданы некорректные данные');
+  }
   Card.findByIdAndDelete(cardId)
     .orFail(new NotFoundError('Карточка не найдена'))
     .then((card) => {

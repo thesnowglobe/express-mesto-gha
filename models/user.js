@@ -20,7 +20,7 @@ const userSchema = new Schema({
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (link) => /^(?:http(s)?:\/\/)?[\w.-]+(?:\.?[\w.-]+)+[\w\-._~:\/?#[\]@!$&'()*+,;=.]+$/.test(link),
+      validator: (link) => /^(https?:\/\/)(www\.)?([\da-z-.]+)\.([a-z.]{2,6})[\da-zA-Z-._~:?#[\]@!$&'()*+,;=/]*\/?#?$/.test(link),
       message: 'Некорректная ссылка',
     },
   },

@@ -11,7 +11,7 @@ const cardSchema = new Schema({
     type: String,
     required: true,
     validate: {
-      validator: (link) => /^(?:http(s)?:\/\/)?[\w.-]+(?:\.?[\w.-]+)+[\w\-._~:\/?#[\]@!$&'()*+,;=.]+$/.test(link),
+      validator: (link) => /^(https?:\/\/)(www\.)?([\da-z-.]+)\.([a-z.]{2,6})[\da-zA-Z-._~:?#[\]@!$&'()*+,;=/]*\/?#?$/.test(link),
       message: 'Некорректная ссылка',
     },
   },

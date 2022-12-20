@@ -11,7 +11,7 @@ module.exports.signUpValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.?[\w.-]+)+[\w\-._~:\/?#[\]@!$&'()*+,;=.]+$/, 'URL'),
+    avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?([\da-z-.]+)\.([a-z.]{2,6})[\da-zA-Z-._~:?#[\]@!$&'()*+,;=/]*\/?#?$/, 'URL'),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
@@ -32,7 +32,7 @@ module.exports.userDataValidation = celebrate({
 
 module.exports.userAvatarValidation = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.?[\w.-]+)+[\w\-._~:\/?#[\]@!$&'()*+,;=.]+$/, 'URL'),
+    avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?([\da-z-.]+)\.([a-z.]{2,6})[\da-zA-Z-._~:?#[\]@!$&'()*+,;=/]*\/?#?$/, 'URL'),
   }),
 });
 
@@ -45,6 +45,6 @@ module.exports.cardIdValidation = celebrate({
 module.exports.cardDataValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.?[\w.-]+)+[\w\-._~:\/?#[\]@!$&'()*+,;=.]+$/, 'URL'),
+    link: Joi.string().required().pattern(/^(https?:\/\/)(www\.)?([\da-z-.]+)\.([a-z.]{2,6})[\da-zA-Z-._~:?#[\]@!$&'()*+,;=/]*\/?#?$/, 'URL'),
   }),
 });
