@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const { usersRoutes } = require('./routes/users');
 const { cardsRoutes } = require('./routes/cards');
+const { notFoundRoute } = require('./routes/notFound');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { signUpValidation, signInValidation } = require('./middlewares/validation');
@@ -23,6 +24,7 @@ app.post('/signup', signUpValidation, createUser);
 
 app.use('/users', auth, usersRoutes);
 app.use('/cards', auth, cardsRoutes);
+app.use('*', notFoundRoute);
 app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
