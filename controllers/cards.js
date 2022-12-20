@@ -1,96 +1,82 @@
 const Card = require('../models/card');
-const {
-  ERROR_400,
-  ERROR_404,
-  ERROR_500,
-  ERROR_400_MESSAGE,
-  ERROR_404_MESSAGE,
-  ERROR_500_MESSAGE,
-} = require('../constants/errorCodes');
+const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(ERROR_500).send({ message: ERROR_500_MESSAGE }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(201).send({ data: card }))
+  const owner = req.user._id;
+  Card.create({ name, link, owner })
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
-        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE });
+        next(err);
       }
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findByIdAndDelete(cardId)
-    .orFail(() => {
-      const error = new Error();
-      error.statusCode = ERROR_404;
-      throw error;
+    .orFail(new NotFoundError('Карточка не найдена'))
+    .then((card) => {
+      if (card.owner.toString() === req.user._id) {
+        return Card.findByIdAndRemove(cardId)
+          .then(() => res.send({ message: 'Карточка удалена' }));
+      }
+      throw new ForbiddenError('Нет прав на удаление карточки');
     })
-    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
-      } else if (err.statusCode === ERROR_404) {
-        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE });
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
-        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE });
+        next(err);
       }
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   const { cardId } = req.params;
+  const owner = req.user._id;
   Card.findByIdAndUpdate(
     cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true, runValidators: true },
+    { $addToSet: { likes: owner } },
+    { new: true },
   )
-    .orFail(() => {
-      const error = new Error();
-      error.statusCode = ERROR_404;
-      throw error;
-    })
+    .orFail(new NotFoundError('Карточка не найдена'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
-      } else if (err.statusCode === ERROR_404) {
-        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE });
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
-        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE });
+        next(err);
       }
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   const { cardId } = req.params;
+  const owner = req.user._id;
   Card.findByIdAndUpdate(
     cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true, runValidators: true },
+    { $pull: { likes: owner } },
+    { new: true },
   )
-    .orFail(() => {
-      const error = new Error();
-      error.statusCode = ERROR_404;
-      throw error;
-    })
+    .orFail(new NotFoundError('Карточка не найдена'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_400).send({ message: ERROR_400_MESSAGE });
-      } else if (err.statusCode === ERROR_404) {
-        res.status(err.statusCode).send({ message: ERROR_404_MESSAGE });
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
-        res.status(ERROR_500).send({ message: ERROR_500_MESSAGE });
+        next(err);
       }
     });
 };

@@ -1,28 +1,41 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const { ERROR_404, ERROR_404_MESSAGE } = require('./constants/errorCodes');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
 const { usersRoutes } = require('./routes/users');
 const { cardsRoutes } = require('./routes/cards');
+const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();
-
-mongoose.connect('mongodb://localhost:27017/mestodb');
-
+app.use(cookieParser());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = {
-    _id: '638f37ae1b3a3e696c84f05d',
-  };
+app.use(helmet());
 
-  next();
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
 });
 
-app.use('/users', usersRoutes);
-app.use('/cards', cardsRoutes);
-app.use((req, res) => {
-  res.status(ERROR_404).send({ message: ERROR_404_MESSAGE });
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use('/users', auth, usersRoutes);
+app.use('/cards', auth, cardsRoutes);
+app.use(errors());
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message: statusCode === 500
+      ? 'На сервере произошла ошибка'
+      : message,
+  });
+  next();
 });
 
 app.listen(PORT);
